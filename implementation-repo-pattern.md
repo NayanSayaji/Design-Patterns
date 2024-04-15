@@ -57,7 +57,7 @@ A Repository mediates between the `domain and data mapping layer`s, acting like 
     get(): Function;
     create(user: User): Function;
     update(user: User): Function;
-    delete(id: number): Function;
+    remove(id: number): Function;
   }
   ```
 
@@ -76,24 +76,64 @@ export class UserRepository implements IUserRepository {
   private users: User[];
 
   constructor(users: User[]) {
-    this.database = database;
+    this.users = users;
   }
 
-  get(): {};
+  get(){
+    return this.users;
+  };
 
   create(user: User): {
-    // Implementation to create a new user in the database
+    users.push(user);
+    return `USER CREATED : ${user}`
   };
 
   update(
-    id: string,
     user: User
   ): {
     // Implementation to update a user in the database
+    const UserIndx = users.findIndex((u) => u.id === user.id);
+    if (UserIndx === -1) {
+        return 'USER_NOT_FOUND';
+    }
+
+    userData[UserIndx] = user;
+    return `USER UPDATED : ${user}`
   };
 
-  delete(id: string): {
+  remove(id: number): {
     // Implementation to delete a user from the database
+    const UserIndx = userData.findIndex((u) => u.id === userId);
+    if (UserIndx === -1) {
+        return 'USER_NOT_FOUND';
+    }
+    userData.slice(UserIndx, 1)
+    return 'USER_DELETED';
   };
 }
+```
+
+### 3. Using the Repository in Your Application
+
+In our application, we can now use the UserRepository without worrying about the underlying data storage details:
+
+```ts
+// App.ts
+
+import { UserRepository } from "./UserRepository";
+import { User } from "./user.types.ts";
+import { users } from "./user.data.ts";
+
+const userRepository = new UserRepository(users);
+
+const user = userRepository.create({
+  id: "1",
+  name: "John Doe",
+});
+
+console.log(response);
+
+const usersInDB = userRepository.get();
+
+console.log("All users:", userInDB);
 ```
